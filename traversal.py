@@ -44,18 +44,17 @@ def add_edges(graph, node, pos, x=0, y=0, layer=1):
             )
 
 
-def draw_heap(heap_root, traversal_order):
+def draw_heap_with_colors(heap_root, traversal_order):
     heap = nx.DiGraph()
     pos = {heap_root.id: (0, 0)}
     add_edges(heap, heap_root, pos)
 
-    # Generate colors
-    colors = list(mcolors.TABLEAU_COLORS.values())
-    color_idx = 0
+    # Generate colors based on traversal order
+    num_nodes = len(traversal_order)
+    colors = [mcolors.rgb2hex(plt.cm.Blues(i / num_nodes)) for i in range(num_nodes)] # noqa
 
     for i, node_id in enumerate(traversal_order):
-        heap.nodes[node_id]["color"] = colors[color_idx]
-        color_idx = (color_idx + 1) % len(colors)
+        heap.nodes[node_id]["color"] = colors[i]
 
     labels = {node[0]: node[1]["label"] for node in heap.nodes(data=True)}
 
@@ -78,7 +77,7 @@ def dfs_traversal(node, traversal_order):
         dfs_traversal(node.right, traversal_order)
 
 
-def bfs_traversal(root, traversal_order):
+def bfs_traversal(root, traversal_order): # noqa
     queue = [root]
     while queue:
         node = queue.pop(0)
@@ -97,12 +96,10 @@ if __name__ == "__main__":
     root.left.right = Node(15, 5)
     root.right.left = Node(12, 6)
 
-    # DFS
     dfs_order = []
     dfs_traversal(root, dfs_order)
-    draw_heap(root, dfs_order)
+    draw_heap_with_colors(root, dfs_order)
 
-    # BFS
     bfs_order = []
     bfs_traversal(root, bfs_order)
-    draw_heap(root, bfs_order)
+    draw_heap_with_colors(root, bfs_order)
